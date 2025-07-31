@@ -36,9 +36,7 @@ Make sure to install the required libraries using `pip`:
 Step 2: Mount Google Drive and Load the Dataset
 You can store the dataset on Google Drive and load it into your code using the following commands:
 
-python
-Copy
-Edit
+
 from google.colab import drive
 drive.mount('/content/drive')
 import pandas as pd
@@ -47,9 +45,7 @@ df = pd.read_csv(csv_path)
 Step 3: Convert Dataset Rows into Documents
 Each row of the dataset is converted into a readable document to be embedded and retrieved based on semantic similarity:
 
-python
-Copy
-Edit
+
 documents = []
 for _, row in df.iterrows():
     doc = "\n".join([f"{col}: {row[col]}" for col in df.columns])
@@ -57,35 +53,27 @@ for _, row in df.iterrows():
 Step 4: Load SentenceTransformer Model for Embeddings
 Using the MiniLM model to convert documents and queries into vector embeddings:
 
-python
-Copy
-Edit
+
 from sentence_transformers import SentenceTransformer
 embedder = SentenceTransformer('all-MiniLM-L6-v2')
 Step 5: Embed Documents and Create FAISS Index
 The documents are embedded using the MiniLM model and stored in a FAISS index for fast retrieval:
 
-python
-Copy
-Edit
+
 doc_embeddings = embedder.encode(documents, show_progress_bar=True)
 index = faiss.IndexFlatL2(dimension)
 index.add(np.array(doc_embeddings))
 Step 6: Retrieve Relevant Documents for Query
 Given a query, the system will retrieve the most relevant documents using semantic similarity:
 
-python
-Copy
-Edit
+
 def retrieve_relevant_docs(query, k=3):
     query_vec = embedder.encode([query])
     ...
 Step 7: Load and Use Falcon-RW-1B Model for Answer Generation
 The Falcon-RW-1B model is used to generate responses based on the retrieved documents:
 
-python
-Copy
-Edit
+
 from transformers import AutoTokenizer, AutoModelForCausalLM
 model_id = "tiiuae/falcon-rw-1b"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
@@ -93,18 +81,14 @@ model = AutoModelForCausalLM.from_pretrained(model_id)
 Step 8: Generate Answer Using the Model
 The query and context are tokenized, and the response is generated using the model:
 
-python
-Copy
-Edit
+
 inputs = tokenizer(prompt, return_tensors="pt", ...)
 outputs = model.generate(...)
 answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
 Step 9: RAG Pipeline (Retrieval + Generation)
 The core function of the chatbot:
 
-python
-Copy
-Edit
+
 def rag_chatbot(question):
     retrieved_docs = retrieve_relevant_docs(question)
     context = "\n\n".join(retrieved_docs)
@@ -112,9 +96,6 @@ def rag_chatbot(question):
 Step 10: Ask and Answer Questions
 Now you can ask questions related to loan approval and the chatbot will provide answers based on the retrieved documents:
 
-python
-Copy
-Edit
 query = "What features affect loan approval?"
 answer = rag_chatbot(query)
 Hugging Face’s Role in the Code:
